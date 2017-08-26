@@ -1,0 +1,87 @@
+---
+title: "Indeed Product Scientist Homework"
+author: "Michael Lee"
+date: "August 25, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##  Indeed sales leads
+
+The provided dataset on sales leads contained over 70,000 observations and 9 variables. There were many missing data fields that needed to be addressed prior to analysis. For example, empty fields in the "revenue" column appear as "NA". First, the dataset was read into R-studio and the variables were reviewed. I then replace the "NA" fields with 0
+
+```{r}
+dataset <- read.csv("C:/Users/cwbishop/Documents/Github/Indeed/homework_data_set.csv")
+names(dataset)
+dataset$revenue[is.na(dataset$revenue)]=0
+```
+
+## Question 1
+"How many leads are represented in this dataset? Please describe both the assigned and unassigned populations.
+What is the average revenue of each group?"
+
+Each lead is uniquely numbered and the dataset is ordered according to the lead number. If the data numbering were perfect, one could use the last number (77890) as a count of the number of leads. However, since the first lead starts on "0" and to account for potential data entry errors, a count of the number of rows would be more appropriate.
+
+```{r}
+nleads <- nrow(dataset)
+print(nleads)
+```
+To count the number of leads that were assigned or unassigned, we can use the table function on the dataset grouped by the "assigned" variable.
+
+```{r}
+nleads_assign <- table(dataset$assigned)
+names(nleads_assign) <- c("Not assigned","Assigned")
+print(nleads_assign)
+```
+
+To further describe the assigned and unassigned population, we first subset the dataset by the "assigned" variable
+
+```{r}
+data_assigned <- dataset[dataset$assigned==1,]
+data_unassigned <- dataset[dataset$assigned==0,]
+```
+
+To calculate the average revenue in each group, I use the aggregate-mean function on the dataset, aggregating by the assigned variable. Since we are average revenue, it was critical to assign "0" to the missing revenue fields, which I assume represents no revenue was generated for that lead.
+
+```{r}
+avg_revenue <- as.numeric(aggregate(revenue~assigned,dataset,FUN=mean)[2][,1])
+names(avg_revenue) <- c("Unassigned","Assigned")
+
+barplot(avg_revenue,main="Average Revenue by assignment", xlab="Assignment", ylab="$ dollars")
+```
+
+## Question 2
+"What are the most important metrics to consider in this data set? Why?"
+There are 9 variables in the dataset. The most important variables in regard to the questions asked are 1) "revenue" is the dependent variable (outcome), 2) "assigned" will tell us if assigning leads is effective, 3) "age" will be neccessary to determine a relationship between account age and revenue.
+
+## Question 3
+"Analyze any existing relationship between account age and revenue, through visualization and/or other means."
+To assess the relationship between account age and revenue, I converted revenue into a cumulative sum ordered by age. Examining revenue alone is not informative, because there are many emtpy fields and high variance in the revenue fields, making it difficult to interpret. The first plot shows revenue by age of account. 
+
+```{r}
+plot(dataset$age,dataset$revenue, main="Revenue by age of account", ylab="Revenue", xlab="Age (days")
+dataset <- dataset[order(dataset$age),]
+dataset$rev_cumsum <- cumsum(dataset$revenue)
+
+plot(dataset$age,dataset$rev_cumsum, main="Cumulative revenue by age of account",ylab="Cumulative Revenue", xlab="Age (days)")
+
+```
+
+
+
+data_assigned <- data_assigned[order(data_assigned$age),]
+data_unassigned <- data_unassigned[order(data_unassigned$age),]
+data_assigned$rev_cumsum <- cumsum(data_assigned$revenue)
+data_unassigned$rev_cumsum <- cumsum(data_unassigned$revenue)
+
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -1,11 +1,13 @@
 #Import dataset
-dataset <- read.csv("C:/Users/ML/Dropbox/Work/Job Search/Potential Employers/Indeed/homework_data_set.csv")
-
+#dataset <- read.csv("C:/Users/ML/Dropbox/Work/Job Search/Potential Employers/Indeed/homework_data_set.csv")
+dataset <- read.csv("C:/Users/cwbishop/Documents/Github/Indeed/homework_data_set.csv")
+names(dataset)
 #Number of leads is equal to number of rows in dataset
 nleads <- nrow(dataset)
 
 #Count number of leads in assigned and unassigned populations
 table(dataset$assigned)
+
 
 #Convert "NA" value in revenue to zero for upcoming analyses
 dataset$revenue[is.na(dataset$revenue)]=0
@@ -19,6 +21,21 @@ barplot(avg_revenue,main="Average Revenue by assignment", xlab="Assignment", yla
 #Subset by assignment
 data_assigned <- dataset[dataset$assigned==1,]
 data_unassigned <- dataset[dataset$assigned==0,]
+
+#Plot histograms of variables by assignment to explore variables
+hist(as.numeric(data_assigned$date_assignment_starts))
+
+hist(as.numeric(data_unassigned$first_revenue_date),ylim=c(0,1000))
+hist(as.numeric(data_assigned$first_revenue_date),ylim=c(0,1000))
+
+hist(as.numeric(data_assigned$date_assignment_ends))
+hist(as.numeric(data_unassigned$date_assignment_ends))
+
+hist(as.numeric(data_assigned$advertiser_id))
+hist(as.numeric(data_unassigned$advertiser_id))
+
+hist(as.numeric(data_assigned$age))
+hist(as.numeric(data_unassigned$age))
 
 #Calculate cumulative sums of revenue for subsets
 data_assigned <- data_assigned[order(data_assigned$age),]
