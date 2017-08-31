@@ -59,29 +59,49 @@ There are 9 variables in the dataset. The most important variables in regard to 
 
 ## Question 3
 "Analyze any existing relationship between account age and revenue, through visualization and/or other means."
-To assess the relationship between account age and revenue, I converted revenue into a cumulative sum ordered by age. Examining revenue alone is not informative, because there are many emtpy fields and high variance in the revenue fields, making it difficult to interpret. The first plot shows revenue by age of account. 
+Plotting Revenue by age, it is difficult to visually assess a relationship because there a majority of the leads result in 0 revenue, and there are over 70,000 data points in the dataset.  The first plot shows revenue by age of account. 
 
 ```{r}
 plot(dataset$age,dataset$revenue, main="Revenue by age of account", ylab="Revenue", xlab="Age (days")
 dataset <- dataset[order(dataset$age),]
 dataset$rev_cumsum <- cumsum(dataset$revenue)
-
-plot(dataset$age,dataset$rev_cumsum, main="Cumulative revenue by age of account",ylab="Cumulative Revenue", xlab="Age (days)")
-
 ```
 
+To assess the relationship between account age and revenue, I converted revenue into a cumulative sum ordered by age. Here, we can see that almost a third of the revenue producing leads occur very close to the date they are created. The leads over time continue to lead to revenue until about 2000 days, where the revenue plateus. 
+
+```{r}
+plot(dataset$age,dataset$rev_cumsum, main="Cumulative revenue by age of account",ylab="Cumulative Revenue", xlab="Age (days)")
+```
+
+##Question 4
+"What is the incremental value from assigning a lead to the sales team?"
+To examine the incremental value from assigning a lead to the sales team, I used linear regression. 
+
+```{r}
+rev_mod <- lm(dataset$revenue~dataset$assigned)
+summary(rev_mod)
+```
+
+Assignment to a sales team has a significant effect on revenue. The coefficient estimate shows that assignment results in a 2,199,845 increase.  
+
+To account for other potential confounders, a linear model was used with revenue as the outcome, and the other variables in the dataset as independent variables. 
+
+```{r}
+all_mod <- lm(dataset$revenue~dataset$advertiser_id+dataset$assigned+as.integer(dataset$date_assignment_starts)+as.integer(dataset$date_assignment_ends)+as.integer(dataset$first_revenue_date)+as.integer(dataset$date_created)+dataset$age+dataset$assign_days)
+summary(all_mod)
+```
+
+After accounting for the other variables, the estimate for assignment is 1,158,000 compared to no assignment and is statistically significant. Other variables are significant as well, and warrant further investigation.
+
+##Bonus Question
+"Investigate the data however you like and discuss any interesting insights you can find in the data"
 
 
+```{r}
 data_assigned <- data_assigned[order(data_assigned$age),]
 data_unassigned <- data_unassigned[order(data_unassigned$age),]
 data_assigned$rev_cumsum <- cumsum(data_assigned$revenue)
 data_unassigned$rev_cumsum <- cumsum(data_unassigned$revenue)
-
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
