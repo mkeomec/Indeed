@@ -84,7 +84,7 @@ data_assigned$rev_cumsum <- cumsum(data_assigned$revenue)
 plot(dataset$first_revenue_date,dataset$rev_cumsum)
 lines(data_unassigned$first_revenue_date,data_unassigned$rev_cumsum, col='red')
 lines(data_assigned$first_revenue_date,data_assigned$rev_cumsum, col='blue')
-
+legend(0,100000000000,c("Total cumulative revenue","Assigned cumulative revenue","Unassigned cumulative revenue"),lty=c(1,1),lwd=c(2.5,2.5,2.5), col=c("black","blue","red"))
 #Use linear regression model to assess added revenue by assigning lead
 rev_mod <- lm(dataset$revenue~dataset$assigned)
 summary(rev_mod)
